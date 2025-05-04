@@ -71,7 +71,7 @@ export class SignalTrigger implements INodeType {
 
     return new Promise((resolve, reject) => {
       eventSource.onerror = (err) => {
-        this.logger.error('EventSource error');
+        this.logger.error('EventSource error', {err: err, message: err.message});
         reject(err);
       };
 
