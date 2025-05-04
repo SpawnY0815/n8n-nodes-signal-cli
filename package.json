@@ -8,7 +8,11 @@
   ],
   "license": "MIT",
   "homepage": "",
-  "author": "Francois-Guillaume Ribreau <npm@fgribreau.com> (https://fgribreau.com)",
+  "author": {
+    "name": "Francois-Guillaume Ribreau",
+    "email": "npm@fgribreau.com",
+    "url": "https://fgribreau.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/fgribreau/n8n-nodes-signal-cli"

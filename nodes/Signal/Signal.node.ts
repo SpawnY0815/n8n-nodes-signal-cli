@@ -38,16 +38,16 @@ export class Signal implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'Message',
-						value: 'message',
+						name: 'Contact',
+						value: 'contact',
 					},
 					{
 						name: 'Group',
 						value: 'group',
 					},
 					{
-						name: 'Contact',
-						value: 'contact',
+						name: 'Message',
+						value: 'message',
 					},
 					{
 						name: 'Reaction',
@@ -65,6 +65,7 @@ export class Signal implements INodeType {
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
+				noDataExpression: true,
 				displayOptions: {
 					show: {
 						resource: ['message'],
@@ -74,6 +75,7 @@ export class Signal implements INodeType {
 					{
 						name: 'Send',
 						value: 'send',
+						action: 'Send a message',
 					},
 				],
 				default: 'send',
@@ -123,6 +125,7 @@ export class Signal implements INodeType {
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
+				noDataExpression: true,
 				displayOptions: {
 					show: {
 						resource: ['group'],
@@ -132,10 +135,12 @@ export class Signal implements INodeType {
 					{
 						name: 'Create',
 						value: 'create',
+						action: 'Create a group',
 					},
 					{
 						name: 'List',
 						value: 'list',
+						action: 'List a group',
 					},
 				],
 				default: 'create',
@@ -185,6 +190,7 @@ export class Signal implements INodeType {
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
+				noDataExpression: true,
 				displayOptions: {
 					show: {
 						resource: ['contact'],
@@ -194,10 +200,12 @@ export class Signal implements INodeType {
 					{
 						name: 'Update',
 						value: 'update',
+						action: 'Update a contact',
 					},
 					{
 						name: 'List',
 						value: 'list',
+						action: 'List a contact',
 					},
 				],
 				default: 'update',
@@ -246,6 +254,7 @@ export class Signal implements INodeType {
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
+				noDataExpression: true,
 				displayOptions: {
 					show: {
 						resource: ['reaction'],
@@ -255,10 +264,12 @@ export class Signal implements INodeType {
 					{
 						name: 'Send',
 						value: 'send',
+						action: 'Send a reaction',
 					},
 					{
 						name: 'Remove',
 						value: 'remove',
+						action: 'Remove a reaction',
 					},
 				],
 				default: 'send',
@@ -336,6 +347,7 @@ export class Signal implements INodeType {
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
+				noDataExpression: true,
 				displayOptions: {
 					show: {
 						resource: ['receipt'],
@@ -345,6 +357,7 @@ export class Signal implements INodeType {
 					{
 						name: 'Send',
 						value: 'send',
+						action: 'Send a receipt',
 					},
 				],
 				default: 'send',
