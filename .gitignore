@@ -1,0 +1,17 @@
+node_modules
+*.tsbuildinfo
+*.map
+coverage
+.nyc_output
+.vscode
+.idea
+.DS_Store
+*.log
+*.tmp
+test
+tests
+dist
+pnpm-lock.yaml
+*.tgz
+.envrc
+.env

@@ -1,0 +1,71 @@
+{
+  "name": "n8n-nodes-signal-cli",
+  "version": "0.1.0",
+  "description": "n8n nodes for Signal CLI",
+  "keywords": [
+    "n8n-community-node-package"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "author": "Francois-Guillaume Ribreau <npm@fgribreau.com> (https://fgribreau.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fgribreau/n8n-nodes-signal-cli"
+  },
+  "engines": {
+    "node": ">=18.10",
+    "pnpm": ">=9.1"
+  },
+  "packageManager": "pnpm@9.1.4",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "eslint nodes/**/*.ts credentials/**/*.ts package.json",
+    "lintfix": "eslint nodes/**/*.ts credentials/**/*.ts package.json --fix",
+    "prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes/**/*.ts credentials/**/*.ts package.json",
+    "release": "pnpm test && pnpm build && np --no-yarn --any-branch",
+    "test": "jest"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/signalCliApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Signal/Signal.node.js",
+      "dist/nodes/SignalTrigger/SignalTrigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.4",
+    "@types/debug": "^4.1.12",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.3",
+    "@types/omit-deep": "^0.3.2",
+    "@typescript-eslint/parser": "^7.15.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.1",
+    "gulp": "^5.0.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "jest": "^29.7.0",
+    "np": "^10.2.0",
+    "prettier": "^2.8.8",
+    "ts-jest": "^29.3.2",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "debug": "^4.4.0",
+    "eventsource": "^3.0.6",
+    "omit-deep": "^0.3.0",
+    "uuid": "^11.1.0"
+  }
+}
