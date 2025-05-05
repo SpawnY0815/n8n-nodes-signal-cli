@@ -84,6 +84,7 @@ export class Signal implements INodeType {
 				displayName: 'Account',
 				name: 'account',
 				type: 'string',
+				description: 'Phone number (international format)',
 				default: '',
 				required: true,
 				displayOptions: {
@@ -98,7 +99,7 @@ export class Signal implements INodeType {
 				type: 'string',
 				default: '',
 				required: true,
-				description: 'Phone number or group ID of the recipient',
+				description: 'Phone number (international format) or group ID of the recipient',
 				displayOptions: {
 					show: {
 						resource: ['message'],

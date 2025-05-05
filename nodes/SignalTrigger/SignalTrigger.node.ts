@@ -32,13 +32,6 @@ export class SignalTrigger implements INodeType {
       },
     ],
     properties: [
-      {
-        displayName: 'Account',
-        name: 'account',
-        type: 'string',
-        default: '',
-        required: true,
-      },
     ],
   };
 
