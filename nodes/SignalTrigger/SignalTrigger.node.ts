@@ -1,89 +1,100 @@
+"use strict";
 
-import {
+const {
   ITriggerFunctions,
   INodeExecutionData,
   INodeType,
   INodeTypeDescription,
   NodeApiError,
-  ITriggerResponse,
-  NodeConnectionType,
-} from 'n8n-workflow';
-import { EventSource } from 'eventsource';
-import debug from 'debug';
+} = require('n8n-workflow');
+const WebSocket = require('ws');
+const debug = require('debug');
 
 const signalTriggerDebug = debug('n8n:nodes:signal-trigger');
 
-export class SignalTrigger implements INodeType {
-  description: INodeTypeDescription = {
-    displayName: 'Signal Trigger',
-    name: 'signalTrigger',
-    group: ['trigger'],
-    version: 1,
-    description: 'Triggers when a new message is received',
-    defaults: {
-      name: 'Signal Trigger',
-    },
-		inputs: [],
-		outputs: [NodeConnectionType.Main],
-    credentials: [
-      {
-        name: 'signalCliApi',
-        required: true,
+class SignalTrigger {
+  constructor() {
+    this.description = /** @type {INodeTypeDescription} */ ({
+      displayName: 'Signal Trigger',
+      name: 'signalTrigger',
+      group: ['trigger'],
+      version: 1,
+      description: 'Triggers when a new message is received',
+      defaults: {
+        name: 'Signal Trigger',
       },
-    ],
-    properties: [
-    ],
-  };
+      inputs: [],
+      outputs: ['main'],
+      credentials: [
+        {
+          name: 'signalCliApi',
+          required: true,
+        },
+      ],
+      properties: [],
+    });
+  }
 
-  async trigger(this: ITriggerFunctions): Promise<ITriggerResponse> {
+  /**
+   * @this {ITriggerFunctions}
+   * @returns {Promise<import('n8n-workflow').ITriggerResponse>}
+   */
+  async trigger() {
     const credentials = await this.getCredentials('signalCliApi');
+
     if (!credentials.url) {
-      throw new NodeApiError(this.getNode(), { message: 'Signal CLI API URL is not set in credentials' });
+      throw new NodeApiError(this.getNode(), {
+        message: 'Signal CLI API URL is not set in credentials',
+      });
     }
-    const url = `${credentials.url}/api/v1/events`;
+    if (!credentials.account) {
+      throw new NodeApiError(this.getNode(), {
+        message: 'Signal CLI account is not set in credentials',
+      });
+    }
 
-    const eventSource = new EventSource(url);
+    // Build WebSocket URL with phone number (account)
+    const baseUrl = credentials.url.replace(/\/+$/, '');
+    const url = `${baseUrl}/v1/receive/${encodeURIComponent(credentials.account)}`;
 
-    eventSource.onmessage = (event) => {
-      signalTriggerDebug('Received event: %o', event);
+    const ws = new WebSocket(url);
+
+    // Handle incoming WebSocket messages
+    ws.on('message', (data) => {
+      signalTriggerDebug('Received message: %s', data.toString());
       try {
-        const data = JSON.parse(event.data);
-        const message = data.dataMessage?.message;
+        const parsed = JSON.parse(data.toString());
+//        const message = parsed.dataMessage?.message;
+        const message = parsed.envelope?.dataMessage?.message;
+
         if (message) {
-          const item: INodeExecutionData = {
-            json: { message },
-          };
+          /** @type {INodeExecutionData} */
+          const item = { json: { message } };
           this.emit([this.helpers.returnJsonArray([item])]);
         }
       } catch (error) {
-        this.logger.error('Error parsing message from Signal API', { error });
-      }
-    };
-
-    
-
-    return new Promise((resolve, reject) => {
-      eventSource.onerror = (err) => {
-        this.logger.error('EventSource error', {err: err, message: err.message});
-        reject(err);
-      };
-
-      eventSource.onopen = () => {
-        signalTriggerDebug('Connected to %s', url);
-
-        eventSource.onerror = (err) => {
-          this.logger.error('EventSource error', {error: err });
-        };
-
-        resolve({
-          closeFunction: async () => {
-            eventSource.close();
-          },
-        });
+        this.logger.error('Error parsing WebSocket message', { error });
       }
     });
 
-    
+    return new Promise((resolve, reject) => {
+      // On successful connection
+      ws.on('open', () => {
+        signalTriggerDebug('WebSocket connected to %s', url);
+        resolve({
+          closeFunction: async () => {
+            ws.close();
+          },
+        });
+      });
 
+      // On connection error
+      ws.on('error', (err) => {
+        this.logger.error('WebSocket error', { error: err });
+        reject(err);
+      });
+    });
   }
 }
+
+exports.SignalTrigger = SignalTrigger;
