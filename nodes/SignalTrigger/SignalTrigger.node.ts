@@ -53,27 +53,36 @@ class SignalTrigger {
       });
     }
 
-    // Build WebSocket URL with phone number (account)
+    // Build WebSocket URL
     const baseUrl = credentials.url.replace(/\/+$/, '');
     const url = `${baseUrl}/v1/receive/${encodeURIComponent(credentials.account)}`;
-
     const ws = new WebSocket(url);
 
-    // Handle incoming WebSocket messages
-    ws.on('message', (data) => {
-      signalTriggerDebug('Received message: %s', data.toString());
+    ws.on('message', (raw) => {
+      signalTriggerDebug('Raw message: %s', raw.toString());
+      let payload;
       try {
-        const payload = JSON.parse(data.toString());
-        const item = { json: payload };
-        this.emit([this.helpers.returnJsonArray([item])]);
-      } catch (error) {
-        this.logger.error('Error parsing WebSocket message', { error });
+        payload = JSON.parse(raw.toString());
+      } catch (err) {
+        this.logger.error('Invalid JSON from WebSocket', { error: err });
+        return;
       }
+
+      const { envelope, account } = payload;
+
+      // 1) nur echte eingehende Nachrichten (dataMessage.message !== null)
+      if (!envelope.dataMessage?.message) return;
+
+      // 2) keine Self-Loop: Quelle darf nicht unser eigenes Konto sein
+      if (envelope.source === account) return;
+
+      // alles ok → weiteremitten
+      /** @type {INodeExecutionData} */
+      const item = { json: payload };
+      this.emit([ this.helpers.returnJsonArray([item]) ]);
     });
 
-
     return new Promise((resolve, reject) => {
-      // On successful connection
       ws.on('open', () => {
         signalTriggerDebug('WebSocket connected to %s', url);
         resolve({
@@ -83,7 +92,6 @@ class SignalTrigger {
         });
       });
 
-      // On connection error
       ws.on('error', (err) => {
         this.logger.error('WebSocket error', { error: err });
         reject(err);
