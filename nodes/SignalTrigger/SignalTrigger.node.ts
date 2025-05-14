@@ -63,19 +63,14 @@ class SignalTrigger {
     ws.on('message', (data) => {
       signalTriggerDebug('Received message: %s', data.toString());
       try {
-        const parsed = JSON.parse(data.toString());
-//        const message = parsed.dataMessage?.message;
-        const message = parsed.envelope?.dataMessage?.message;
-
-        if (message) {
-          /** @type {INodeExecutionData} */
-          const item = { json: { message } };
-          this.emit([this.helpers.returnJsonArray([item])]);
-        }
+        const payload = JSON.parse(data.toString());
+        const item = { json: payload };
+        this.emit([this.helpers.returnJsonArray([item])]);
       } catch (error) {
         this.logger.error('Error parsing WebSocket message', { error });
       }
     });
+
 
     return new Promise((resolve, reject) => {
       // On successful connection
