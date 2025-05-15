@@ -70,8 +70,10 @@ class SignalTrigger {
 
       const { envelope, account } = payload;
 
-      // 1) nur echte eingehende Nachrichten (dataMessage.message !== null)
-      if (!envelope.dataMessage?.message) return;
+      // 1) nur echte eingehende Nachrichten oder Attachments
+      const dm = envelope.dataMessage;
+      if (!(dm?.message != null || (Array.isArray(dm?.attachments) && dm.attachments.length > 0))) return;
+
 
       // 2) keine Self-Loop: Quelle darf nicht unser eigenes Konto sein
       if (envelope.source === account) return;
