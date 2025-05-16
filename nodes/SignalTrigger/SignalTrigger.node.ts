@@ -25,6 +25,7 @@ class SignalTrigger {
       },
       inputs: [],
       outputs: ['main'],
+      icon: 'file:signal.svg',
       credentials: [
         {
           name: 'signalCliApi',

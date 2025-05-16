@@ -20,7 +20,8 @@ class Signal {
             description: 'Interact with Signal CLI API',
             defaults: { name: 'Signal' },
             inputs: ['main'],
-            outputs: ['main'],
+			outputs: ['main'],
+			icon: 'file:signal.svg',
             credentials: [{ name: 'signalCliApi', required: true }],
             properties: [
                 {
